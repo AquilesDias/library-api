@@ -2,12 +2,17 @@ package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aquilesdias.libraryapi.api.dto.BookDTO;
+import com.github.aquilesdias.libraryapi.model.entity.Book;
+import com.github.aquilesdias.libraryapi.service.BookService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,11 +31,18 @@ public class BookControllerTest {
     @Autowired
     MockMvc mvc;
 
+    @MockBean
+    BookService service;
+
     @Test
     @DisplayName("Deve criar um livro com sucesso.")
     public void createBookTeste() throws Exception{
 
         BookDTO dto =  BookDTO.builder().title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
+
+        Book saveBook = Book.builder().id(1L).title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
+
+        BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(saveBook);
 
         String json = new ObjectMapper().writeValueAsString(dto);
 
@@ -43,7 +55,7 @@ public class BookControllerTest {
         mvc
                 .perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(dto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
