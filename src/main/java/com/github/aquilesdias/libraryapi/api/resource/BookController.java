@@ -1,13 +1,19 @@
 package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.github.aquilesdias.libraryapi.api.dto.BookDTO;
+import com.github.aquilesdias.libraryapi.api.exceptions.ApiErrors;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/books")
@@ -27,7 +33,7 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDTO bookDTO(@RequestBody BookDTO dto){
+    public BookDTO bookDTO(@RequestBody @Valid BookDTO dto){
 
         Book entity = modelMapper.map(dto, Book.class);
 
@@ -48,5 +54,12 @@ public class BookController {
 //                .isbn(entity.getIsbn())
 //                .build();
 //
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handlerValidationException(MethodArgumentNotValidException ex){
+        BindingResult bindingResult = ex.getBindingResult();
+        return new ApiErrors(bindingResult);
     }
 }
