@@ -2,6 +2,7 @@ package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aquilesdias.libraryapi.api.dto.BookDTO;
+import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.BookService;
 import org.hamcrest.Matchers;
@@ -38,7 +39,7 @@ public class BookControllerTest {
     @DisplayName("Deve criar um livro com sucesso.")
     public void createBookTeste() throws Exception{
 
-        BookDTO dto =  BookDTO.builder().title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
+        BookDTO dto = createNewBook();
 
         Book saveBook = Book.builder().id(1L).title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
 
@@ -62,6 +63,8 @@ public class BookControllerTest {
 
     }
 
+
+
     @Test
     @DisplayName("Deve lançar um erro de validação quando houver ausencia de dados para criar livro. ")
     public void createInvalidBookTeste() throws Exception {
@@ -79,5 +82,33 @@ public class BookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(3)));
 
 
+    }
+
+    @Test
+    @DisplayName("Deve lançar um erro ao tentar cadastrar um livro com o isbn já existente.")
+    public void createBookWithDuplicatedIsbn() throws Exception {
+
+        String mensagemErro = "ISBN já existe!";
+
+        BookDTO dto = createNewBook();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(service.save(Mockito.any(Book.class))).willThrow(new BusinessException(mensagemErro));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(mensagemErro));
+
+    }
+
+    private static BookDTO createNewBook() {
+        return BookDTO.builder().title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
     }
 }
