@@ -44,7 +44,6 @@ public class BookControllerTest {
         Book saveBook = Book.builder().id(1L).title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
 
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(saveBook);
-
         String json = new ObjectMapper().writeValueAsString(dto);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
