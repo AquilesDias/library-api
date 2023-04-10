@@ -38,7 +38,7 @@ public class BookServiceTest {
         //cenario
         Book book = createValidBook();
 
-        Mockito.when(repository.existsByIdIsbn(Mockito.anyString())).thenReturn(false);
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
 
         Mockito.when( repository.save(book))
                 .thenReturn(
@@ -71,7 +71,7 @@ public class BookServiceTest {
 
         //cenario
         Book book = createValidBook();
-        Mockito.when( repository.existsByIdIsbn(Mockito.anyString())).thenReturn(true);
+        Mockito.when( repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
 
         //execução
         Throwable exception = Assertions.catchThrowable( () -> bookService.save(book));

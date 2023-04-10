@@ -1,5 +1,7 @@
 package com.github.aquilesdias.libraryapi.model.repository;
 
+import com.github.aquilesdias.libraryapi.model.BookRepository;
+import com.github.aquilesdias.libraryapi.model.entity.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +23,7 @@ public class BookRepositoryTest {
     TestEntityManager testEntityManager;
 
     @Autowired
-    com.github.aquilesdias.libraryapi.model.BookRepository bookRepository;
+    BookRepository bookRepository;
 
     @Test
     @DisplayName("Deve retornar true quando o isbn existir.")
@@ -31,7 +33,7 @@ public class BookRepositoryTest {
         String isbn = "123";
 
         //execucao
-        boolean exists = bookRepository.existsByIdIsbn(isbn);
+        boolean exists = bookRepository.existsByIsbn(isbn);
 
         //verificação
         assertThat(exists).isTrue();
