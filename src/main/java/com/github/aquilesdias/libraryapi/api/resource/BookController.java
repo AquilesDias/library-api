@@ -62,6 +62,12 @@ public class BookController {
         return new ApiErrors(bindingResult);
     }
 
+    @GetMapping("{id}")
+    public BookDTO findById(@PathVariable("id") Long id){
+        Book book = service.getById().get();
+        return modelMapper.map(book, BookDTO.class);
+    }
+
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrors handlerBusinessException( BusinessException ex){

@@ -33,8 +33,8 @@ public class BookRepositoryTest {
         String isbn = "123";
 
         Book book = Book.builder()
-                .title("Harry porra")
-                .author("J.K")
+                .title("The Last of us")
+                .author("Greg")
                 .isbn(isbn)
                 .build();
 

@@ -4,8 +4,9 @@ import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.BookRepository;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -25,5 +26,9 @@ public class BookServiceImpl implements BookService {
         }
 
         return repository.save(book);
+    }
+
+    public Optional<Book> getById(){
+        return Optional.empty();
     }
 }
