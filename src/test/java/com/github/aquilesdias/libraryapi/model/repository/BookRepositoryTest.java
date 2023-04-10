@@ -32,10 +32,29 @@ public class BookRepositoryTest {
         //cenario
         String isbn = "123";
 
+        Book book = Book.builder()
+                .title("Harry porra")
+                .author("J.K")
+                .isbn(isbn)
+                .build();
+
+        testEntityManager.persist(book);
+
         //execucao
         boolean exists = bookRepository.existsByIsbn(isbn);
 
         //verificação
         assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve retornar false quando isbn não existir")
+    public void returnFalseWhenIsbnDoesntExists(){
+
+        String isbn = "123";
+
+        boolean exists = bookRepository.existsByIsbn(isbn);
+
+        assertThat(exists).isFalse();
     }
 }
