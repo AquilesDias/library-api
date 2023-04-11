@@ -28,7 +28,7 @@ public class BookServiceImpl implements BookService {
         return repository.save(book);
     }
 
-    public Optional<Book> getById(){
+    public Optional<Book> getById(Long id){
         return Optional.empty();
     }
 }
