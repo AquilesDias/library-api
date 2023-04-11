@@ -151,6 +151,33 @@ public class BookControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void delete() throws Exception{
+
+        Book book = Book.builder().id(1l).build();
+        BDDMockito.given(service.getById(Mockito.anyLong()) ).willReturn(Optional.of(book));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" +1));
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve retornar not found quando não encontrar livro para deletar.")
+    public void deleteInexistentBookTest() throws Exception{
+
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .delete(BOOK_API.concat("/" +1));
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
     private static BookDTO createNewBook() {
         return BookDTO.builder().title("Senhor dos Aneis").author("J. R. R. Tolkien").isbn("8533613377").build();
     }

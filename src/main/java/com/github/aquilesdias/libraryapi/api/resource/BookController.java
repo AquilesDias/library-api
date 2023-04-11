@@ -72,6 +72,14 @@ public class BookController {
 
     }
 
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id){
+        Book book = service.getById(id).orElseThrow( () ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND));
+        service.delete(id);
+    }
+
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrors handlerBusinessException( BusinessException ex){
