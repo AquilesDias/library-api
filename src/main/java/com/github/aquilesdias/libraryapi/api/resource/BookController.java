@@ -86,7 +86,7 @@ public class BookController {
     public void delete(@PathVariable Long id){
         Book book = service.getById(id).orElseThrow( () ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND));
-        service.delete(id);
+        service.delete(book);
     }
 
     @ExceptionHandler(BusinessException.class)

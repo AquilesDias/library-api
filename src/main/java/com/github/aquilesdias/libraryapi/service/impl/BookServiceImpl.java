@@ -33,8 +33,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void delete(Long id) {
-
+    public void delete(Book book) {
+        if(book == null || book.getId() == null){
+            throw new IllegalArgumentException("Não foi possivel deletar");
+        }
+        this.repository.delete(book);
     }
 
     @Override
