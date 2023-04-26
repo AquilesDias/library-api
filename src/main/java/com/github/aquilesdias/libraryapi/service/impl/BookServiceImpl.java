@@ -4,6 +4,8 @@ import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.BookRepository;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -46,5 +48,10 @@ public class BookServiceImpl implements BookService {
             throw new IllegalArgumentException("Não foi possivel atualizar");
         }
         return repository.save(book);
+    }
+
+    @Override
+    public Page<Book> find(Book any, Pageable any1) {
+        return null;
     }
 }
