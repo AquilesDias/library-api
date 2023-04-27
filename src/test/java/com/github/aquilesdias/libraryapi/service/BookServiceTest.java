@@ -10,12 +10,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -82,6 +88,30 @@ public class BookServiceTest {
         assertThat( foundBook.get().getTitle()).isEqualTo(book.getTitle());
         assertThat( foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
         assertThat( foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
+
+    }
+    
+    
+    @Test
+    @DisplayName("Deve retornar um book por propriedades.")
+    public void findBookTest(){
+
+        //Cenario
+        Book book = createValidBook();
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Book> list = Arrays.asList(book);
+        Page<Book> page = new PageImpl<Book>(list, pageRequest, 1);
+
+        Mockito.when( repository.findAll(Mockito.any(Example.class), Mockito.any(PageRequest.class))).thenReturn(page);
+
+        //Execução
+        Page<Book> result = bookService.find(book, pageRequest);
+
+        //Verificação
+        assertThat( result.getTotalElements()).isEqualTo(1);
+        assertThat( result.getContent()).isEqualTo(list);
+        assertThat( result.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat( result.getPageable().getPageSize()).isEqualTo(10);
 
     }
 
