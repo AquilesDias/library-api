@@ -1,7 +1,7 @@
 package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.aquilesdias.libraryapi.api.dto.LoadDTO;
+import com.github.aquilesdias.libraryapi.api.dto.LoanDTO;
 import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.LoanService;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -49,7 +49,7 @@ public class LoanControllerTest {
     @DisplayName("Deve realizar um emprestimo.")
     public void createLoadTest() throws Exception{
 
-        LoadDTO loadDTO = LoadDTO.builder().isbn("123").customer("Douglas").build();
+        LoanDTO loadDTO = LoanDTO.builder().isbn("123").customer("Douglas").build();
         String json = new ObjectMapper().writeValueAsString(loadDTO);
 
         Book book = Book.builder().id(1l).isbn("123").build();
@@ -69,6 +69,6 @@ public class LoanControllerTest {
 
         mvc.perform(requestBuilder)
                 .andExpect( status().isCreated())
-                .andExpect( jsonPath("id").value(1l));
+                .andExpect( content().string("1"));
     }
 }
