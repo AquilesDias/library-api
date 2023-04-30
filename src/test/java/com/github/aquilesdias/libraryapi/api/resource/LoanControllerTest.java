@@ -6,6 +6,7 @@ import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.LoanService;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.BookService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -70,5 +70,29 @@ public class LoanControllerTest {
         mvc.perform(requestBuilder)
                 .andExpect( status().isCreated())
                 .andExpect( content().string("1"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao tentar fazer emprestimo de livro inexistente.")
+    public void invalidIsbnCreateLoanTest() throws Exception{
+
+        LoanDTO loadDTO = LoanDTO.builder().isbn("123").customer("Douglas").build();
+        String json = new ObjectMapper().writeValueAsString(loadDTO);
+
+        BDDMockito.given(bookService.getBookByIsbn("123"))
+                .willReturn(Optional.empty() );
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(LOAD_API)
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error", Matchers.hasSize(1)))
+                .andExpect(jsonPath("error[0]").value("Book not found for passed isbn"));
+
+
     }
 }
