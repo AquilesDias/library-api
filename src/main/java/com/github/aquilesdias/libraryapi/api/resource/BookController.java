@@ -62,12 +62,12 @@ public class BookController {
 //
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerValidationException(MethodArgumentNotValidException ex){
-        BindingResult bindingResult = ex.getBindingResult();
-        return new ApiErrors(bindingResult);
-    }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ApiErrors handlerValidationException(MethodArgumentNotValidException ex){
+//        BindingResult bindingResult = ex.getBindingResult();
+//        return new ApiErrors(bindingResult);
+//    }
 
     @GetMapping("{id}")
     public BookDTO findById(@PathVariable("id") Long id){
@@ -107,9 +107,9 @@ public class BookController {
         service.delete(book);
     }
 
-    @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handlerBusinessException( BusinessException ex){
-        return new ApiErrors(ex);
-    }
+//    @ExceptionHandler(BusinessException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ApiErrors handlerBusinessException( BusinessException ex){
+//        return new ApiErrors(ex);
+//    }
 }

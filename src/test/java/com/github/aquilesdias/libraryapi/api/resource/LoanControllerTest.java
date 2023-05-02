@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = LoanController.class)
 public class LoanControllerTest {
 
-    static private String  LOAD_API = "/api/load";
+    static final String LOAN_API = "/api/loan";
 
     @Autowired
     MockMvc mvc;
@@ -62,7 +62,7 @@ public class LoanControllerTest {
         BDDMockito.given(loanService.save(Mockito.any(Loan.class))).willReturn(loan);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post(LOAD_API)
+                .post(LOAN_API)
                 .content(json)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -83,15 +83,15 @@ public class LoanControllerTest {
                 .willReturn(Optional.empty() );
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .post(LOAD_API)
+                .post(LOAN_API)
                 .content(json)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("error", Matchers.hasSize(1)))
-                .andExpect(jsonPath("error[0]").value("Book not found for passed isbn"));
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Book not found for passed isbn"));
 
 
     }

@@ -6,21 +6,19 @@ import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.BookService;
 import com.github.aquilesdias.libraryapi.service.LoanService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/loan")
 @RequiredArgsConstructor
 public class LoanController {
 
-    private BookService bookService;
-    private LoanService loanService;
+    private final BookService bookService;
+    private final LoanService loanService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
