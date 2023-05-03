@@ -2,6 +2,7 @@ package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aquilesdias.libraryapi.api.dto.LoanDTO;
+import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.LoanService;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -93,6 +95,32 @@ public class LoanControllerTest {
                 .andExpect(jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("Book not found for passed isbn"));
 
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro ao tentar fazer emprestimo de um livro emprestado")
+    public void loanedBookErrorOnCreateLoanTest() throws Exception{
+
+        LoanDTO loanDTO = LoanDTO.builder().isbn("123").customer("Fulano").build();
+        String  json    = new ObjectMapper().writeValueAsString(loanDTO);
+
+        Book book = Book.builder().id(1L).isbn("123").build();
+        BDDMockito.given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
+
+        BDDMockito.given(loanService.save(Mockito.any(Loan.class)))
+                .willThrow(new BusinessException("Book already loaned"));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(LOAN_API)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect( status().isBadRequest())
+                .andExpect( jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect( jsonPath("errors[0]").value("Book already loaned"));
 
     }
 }
