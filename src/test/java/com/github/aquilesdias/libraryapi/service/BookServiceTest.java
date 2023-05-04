@@ -6,6 +6,7 @@ import com.github.aquilesdias.libraryapi.model.BookRepository;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.service.impl.BookServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.OptionalLongAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -215,6 +217,24 @@ public class BookServiceTest {
                 .hasMessage("ISBN já existe!");
 
         Mockito.verify(repository, Mockito.never()).save(book);
+
+    }
+
+    @Test
+    @DisplayName("Deve obter um book por ISBN")
+    public void getBookByIsbn(){
+
+        String isbn = "123";
+
+        Mockito.when( repository.findByIsbn(isbn)).thenReturn(Optional.of(Book.builder().id(1L).isbn(isbn).build()));
+
+        Optional<Book> book = bookService.getBookByIsbn(isbn);
+
+        assertThat( book.isPresent()     ).isTrue();
+        assertThat( book.get().getId()   ).isEqualTo(1L);
+        assertThat( book.get().getIsbn() ).isEqualTo("123");
+
+        Mockito.verify(repository, Mockito.times(1)).findByIsbn(isbn);
 
     }
 }
