@@ -43,6 +43,7 @@ public class LoanServiceTest {
 
         Loan savedLoan = Loan.builder().id(1l).customer("Harry").localDate(LocalDate.now()).book(book).build();
 
+        Mockito.when( repository.existsByBookAndNotReturned(book)).thenReturn(false);
         Mockito.when( repository.save(savingLoan)).thenReturn(savedLoan);
 
         Loan loan = service.save(savingLoan);
