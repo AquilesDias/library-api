@@ -99,7 +99,7 @@ public class BookRepositoryTest {
         assertThat( bookDeleted ).isNull();
     }
 
-    private static Book createNewBook(String isbn) {
+    public static Book createNewBook(String isbn) {
         return Book.builder()
                 .title("The Last of us")
                 .author("Greg")
