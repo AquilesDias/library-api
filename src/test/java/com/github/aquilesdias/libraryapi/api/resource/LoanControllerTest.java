@@ -2,6 +2,7 @@ package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.aquilesdias.libraryapi.api.dto.LoanDTO;
+import com.github.aquilesdias.libraryapi.api.dto.ReturnedLoanDTO;
 import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.LoanService;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -122,5 +122,28 @@ public class LoanControllerTest {
                 .andExpect( jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect( jsonPath("errors[0]").value("Book already loaned"));
 
+    }
+
+    @Test
+    @DisplayName("Deve retornar um livro")
+    public void returnedBookTest() throws Exception{
+
+        ReturnedLoanDTO returnedLoanDTO = ReturnedLoanDTO.builder().returnedBook(true).build();
+        Loan loan = Loan.builder().id(1l).build();
+
+        BDDMockito.given( loanService.getById(Mockito.anyLong())).willReturn(Optional.of(loan));
+
+        String json = new ObjectMapper().writeValueAsString(returnedLoanDTO);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .patch( LOAN_API.concat("/1") )
+                .content( json )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON );
+
+        mvc.perform(request)
+                .andExpect( status().isNotFound() );
+
+        Mockito.verify( loanService, Mockito.times(0)).update(loan);
     }
 }

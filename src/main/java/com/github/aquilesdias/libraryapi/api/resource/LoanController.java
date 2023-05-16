@@ -1,6 +1,7 @@
 package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.github.aquilesdias.libraryapi.api.dto.LoanDTO;
+import com.github.aquilesdias.libraryapi.api.dto.ReturnedLoanDTO;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.BookService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/loan")
@@ -36,4 +38,11 @@ public class LoanController {
         return entity.getId();
     }
 
+    @PatchMapping(" {id} ")
+    public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto){
+
+        Loan loan = loanService.getById(id).get();
+        loan.setReturned( dto.getReturnedBook() );
+        loanService.update(loan);
+    }
 }
