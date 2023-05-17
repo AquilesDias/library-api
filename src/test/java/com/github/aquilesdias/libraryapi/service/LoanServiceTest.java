@@ -9,12 +9,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
@@ -69,5 +71,24 @@ public class LoanServiceTest {
         assertThat(throwable).isInstanceOf(BusinessException.class).hasMessage("Book already loaned");
 
         Mockito.verify( repository, Mockito.never() ).save(savingLoan);
+    }
+
+    @Test
+    @DisplayName("Deve obter informações de um emprestimo por ID.")
+    public void getDetailsLoanTest(){
+
+        Book book = Book.builder().id(1L).build();
+        Loan loan = Loan.builder().customer("Harry").localDate(LocalDate.now()).book(book).build();
+
+        Mockito.when( repository.findById(1L) ).thenReturn( Optional.of(loan) );
+
+        Optional<Loan> result = service.getById(1L);
+
+        assertThat( result.isPresent()         ).isTrue();
+        assertThat( result.get().getId()       ).isEqualTo( loan.getId()        );
+        assertThat( result.get().getCustomer() ).isEqualTo( loan.getCustomer()  );
+        assertThat( result.get().getBook()     ).isEqualTo( loan.getBook()      );
+        assertThat( result.get().getLocalDate()).isEqualTo( loan.getLocalDate() );
+
     }
 }
