@@ -91,4 +91,21 @@ public class LoanServiceTest {
         assertThat( result.get().getLocalDate()).isEqualTo( loan.getLocalDate() );
 
     }
+
+    @Test
+    @DisplayName("Deve atualizar um emprestimo.")
+    public void updateLoanTest(){
+
+        Book book = Book.builder().id(1L).build();
+        Loan loan = Loan.builder().id(1L).customer("Harry").localDate(LocalDate.now()).book(book).build();
+        loan.setReturned( true );
+
+        Mockito.when( repository.save(loan) ).thenReturn(loan);
+
+        Loan updateLoan = service.update(loan);
+
+        assertThat( updateLoan.getReturned() ).isTrue();
+
+        Mockito.verify( repository ).save(loan);
+    }
 }
