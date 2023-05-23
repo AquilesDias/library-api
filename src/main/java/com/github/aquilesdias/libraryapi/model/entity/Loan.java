@@ -23,6 +23,7 @@ public class Loan {
     private Book book;
 
     private String customer;
+    private String customerEmail;
     private LocalDate localDate;
     private Boolean returned;
 }
