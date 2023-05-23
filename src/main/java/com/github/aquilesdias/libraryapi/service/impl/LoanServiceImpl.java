@@ -3,6 +3,7 @@ package com.github.aquilesdias.libraryapi.service.impl;
 import com.github.aquilesdias.libraryapi.api.dto.LoanFilterDTO;
 import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.LoanRepository;
+import com.github.aquilesdias.libraryapi.model.entity.Book;
 import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.LoanService;
 import org.springframework.data.domain.Page;
@@ -39,5 +40,10 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Page<Loan> find(LoanFilterDTO filter, Pageable page) {
         return loanRepository.findByBookIsbnOrCustomer(filter.getIsbn(), filter.getCustomer(), page);
+    }
+
+    @Override
+    public Page<Loan> getLoanByBook(Book book, Pageable pageable) {
+        return loanRepository.findByBook(book, pageable);
     }
 }

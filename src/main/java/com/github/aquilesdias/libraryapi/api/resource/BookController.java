@@ -1,10 +1,14 @@
 package com.github.aquilesdias.libraryapi.api.resource;
 
 import com.github.aquilesdias.libraryapi.api.dto.BookDTO;
+import com.github.aquilesdias.libraryapi.api.dto.LoanDTO;
 import com.github.aquilesdias.libraryapi.api.exceptions.ApiErrors;
 import com.github.aquilesdias.libraryapi.api.exceptions.BusinessException;
 import com.github.aquilesdias.libraryapi.model.entity.Book;
+import com.github.aquilesdias.libraryapi.model.entity.Loan;
 import com.github.aquilesdias.libraryapi.service.BookService;
+import com.github.aquilesdias.libraryapi.service.LoanService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,23 +23,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/books")
+@RequiredArgsConstructor
 public class BookController {
 
-    @Autowired
-    private BookService service;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final BookService service;
 
-//    private BookService service;
-//
-//    public BookController(BookService service){
-//        this.service = service;
-//    }
+    private final LoanService loanService;
+
+    private final ModelMapper modelMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -62,13 +63,6 @@ public class BookController {
 //
     }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiErrors handlerValidationException(MethodArgumentNotValidException ex){
-//        BindingResult bindingResult = ex.getBindingResult();
-//        return new ApiErrors(bindingResult);
-//    }
-
     @GetMapping("{id}")
     public BookDTO findById(@PathVariable("id") Long id){
 
@@ -90,6 +84,23 @@ public class BookController {
         return new PageImpl<BookDTO>(list, pageable, result.getTotalElements());
     }
 
+    @GetMapping("{id}/loans")
+    public Page<LoanDTO> loanByBook(@PathVariable Long id, Pageable pageable){
+
+        Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Page<Loan> result = loanService.getLoanByBook(book, pageable);
+        List<LoanDTO> list = result.getContent()
+                .stream()
+                .map(loan -> {
+                    Book loanBook = loan.getBook();
+                    BookDTO bookDTO = modelMapper.map(loanBook, BookDTO.class);
+                    LoanDTO loanDTO = modelMapper.map(loan, LoanDTO.class);
+                    loanDTO.setBook(bookDTO);
+                    return loanDTO;
+                }).collect(Collectors.toList());
+        return new PageImpl<LoanDTO>(list, pageable, result.getTotalElements());
+    }
+
     @PutMapping("{id}")
     public BookDTO update(@PathVariable Long id, BookDTO bookDTO){
         Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -107,9 +118,4 @@ public class BookController {
         service.delete(book);
     }
 
-//    @ExceptionHandler(BusinessException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiErrors handlerBusinessException( BusinessException ex){
-//        return new ApiErrors(ex);
-//    }
 }
