@@ -21,7 +21,7 @@ public class ScheduleService {
     private final LoanServiceImpl loanService;
     private final EmailService emailService;
 
-    @Scheduled( cron = "CRON_LATE_LOANS")
+    @Scheduled( cron = CRON_LATE_LOANS)
     public void sendMailToLateLoans(){
         List<Loan> allLateLoans = loanService.getAllLateLoan();
         List<String> listMails = allLateLoans

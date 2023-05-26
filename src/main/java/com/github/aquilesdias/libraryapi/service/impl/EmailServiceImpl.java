@@ -16,7 +16,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender javaMailSender;
 
-    @Value("${ application.mail.default-remetent }")
+    @Value("${application.mail.default-remetent}")
     private String remetent;
 
     @Override
